@@ -64,7 +64,7 @@ class Index extends React.Component {
       method: 'GET'
     })
     .then(res => {
-      if(res.data.length > 0) {
+      // if(res.data.length > 0) {
         additional_list = [];
         res.data.map((setting, key) => (
           additional_list.push(
@@ -79,7 +79,7 @@ class Index extends React.Component {
           )
         ));
         this.setState({ additional_list });
-      }
+      // }
     });
   }
 
