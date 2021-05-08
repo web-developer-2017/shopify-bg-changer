@@ -19,7 +19,7 @@ const getBackgroundColor = async (shop, productVendor) => {
     if(globalBackgroundSettings[0].onoff) {
       backgroundColor = globalBackgroundSettings[0].bgColor
     } else {
-      backgroundColor = '255,77,255,0';
+      return false;
     }
   }
 

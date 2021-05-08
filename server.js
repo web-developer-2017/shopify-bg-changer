@@ -151,26 +151,28 @@ app.prepare().then(() => {
     console.log('bgColor', bgColor);
 		console.log('productId', productId);
 
-		for ( let index = 0; index < productData.images.length; index++ ) {
-			let image = productData.images[index];
-			let imageMetafields = await getImageMetafields(ctx, accessToken, image.id);
-			let backgroundRemoved = imageMetafields.some(metafield => {
-				return (metafield.key == 'removed_bg') && (metafield.value == 'yes');
-			});
-			console.log('backgroundRemoved', backgroundRemoved);
-
-			if (!backgroundRemoved) {
-				let fileName = await removeImageBackground(image.src, bgColor);
-				uploadProductImage(ctx, accessToken, productId, image, fileName)
-					.then((uploadedProductImage) => {
-						removeProductImage(ctx, accessToken, productId, image.id);
-						console.log('uploadedProductImage', uploadedProductImage);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			}
-		}
+    if(bgColor) {
+      for ( let index = 0; index < productData.images.length; index++ ) {
+        let image = productData.images[index];
+        let imageMetafields = await getImageMetafields(ctx, accessToken, image.id);
+        let backgroundRemoved = imageMetafields.some(metafield => {
+          return (metafield.key == 'removed_bg') && (metafield.value == 'yes');
+        });
+        console.log('backgroundRemoved', backgroundRemoved);
+  
+        if (!backgroundRemoved) {
+          let fileName = await removeImageBackground(image.src, bgColor);
+          uploadProductImage(ctx, accessToken, productId, image, fileName)
+            .then((uploadedProductImage) => {
+              removeProductImage(ctx, accessToken, productId, image.id);
+              console.log('uploadedProductImage', uploadedProductImage);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+    }
 
 		ctx.res.statusCode = 200;
   });
