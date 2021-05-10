@@ -17,6 +17,7 @@ class Index extends React.Component {
           alpha: 0
         },
         onoff: true,
+        appOnOff: true,
         popOverActive: false
       },
       temp_setting: {
@@ -50,7 +51,8 @@ class Index extends React.Component {
           id: res.data[0]._id,
           color: this.rgbaToHSLA(res.data[0].bgColor),
           onoff: res.data[0].onoff,
-          popOverActive: false
+          popOverActive: false,
+          appOnOff: res.data[0].appOnOff,
         };
         this.setState({ global_setting });
       }
@@ -178,6 +180,14 @@ class Index extends React.Component {
   }
 
   // Global Setting Functions
+  handleGlobalOnOffAppChange(checked) {
+    let { global_setting, update_flag } = this.state;
+    global_setting.appOnOff = checked;
+    update_flag = false;
+
+    this.setState({ global_setting, update_flag });
+  }
+
   handleGlobalOnOffChange(checked) {
     let { global_setting, update_flag } = this.state;
     global_setting.onoff = checked;
@@ -354,7 +364,8 @@ class Index extends React.Component {
         method: 'POST',
         data: {
           bgColor: this.hsbaToRGBA(global_setting.color),
-          onoff: global_setting.onoff
+          onoff: global_setting.onoff,
+          appOnOff: global_setting.appOnOff
         },
       })
       .then(res => {
@@ -413,6 +424,11 @@ class Index extends React.Component {
             <Card title="Settings" sectioned primaryFooterAction={{content: 'Save Settings', disabled: update_flag, onAction: this.handleSubmit.bind(this), loading: this.state.updating_flag}}>
               <Card.Section>
                 <p><b>Global Settings</b></p>
+                <div class="setting-line global-setting">
+                  <div class="left-group">
+                    <Switch onChange={this.handleGlobalOnOffAppChange.bind(this)} checked={global_setting.appOnOff} />
+                  </div>
+                </div>
                 <div class="setting-line global-setting">
                   <div class="left-group">
                     <Switch onChange={this.handleGlobalOnOffChange.bind(this)} checked={global_setting.onoff} />
