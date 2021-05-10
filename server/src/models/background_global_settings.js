@@ -6,6 +6,7 @@ const BackgroundGlobalSettingsSchema = new Schema({
   shop: String,
   accessToken: String,
   onoff: Boolean,
+  appOnOff: Boolean,
   bgColor: String
 });
 
