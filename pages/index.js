@@ -439,11 +439,6 @@ class Index extends React.Component {
                   <Card.Section>
                     <div class="setting-line global-setting">
                       <div class="left-group">
-                        <Switch onChange={this.handleGlobalOnOffAppChange.bind(this)} checked={global_setting.appOnOff} />
-                      </div>
-                    </div>
-                    <div class="setting-line global-setting">
-                      <div class="left-group">
                         <Switch onChange={this.handleGlobalOnOffChange.bind(this)} checked={global_setting.onoff} />
                         {
                           global_setting.onoff ? (
@@ -486,7 +481,6 @@ class Index extends React.Component {
                 </Card>
                 <Card title="Detail Backgrounds" sectioned>
                   <Card.Section>
-                    <p><b>Detail Settings</b></p>
                     <div id="content" role="main">
                       <div className="inner-block">
                         <div class="setting-line">
