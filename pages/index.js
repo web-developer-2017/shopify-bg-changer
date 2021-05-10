@@ -378,7 +378,8 @@ class Index extends React.Component {
         data: {
           id: global_setting.id,
           bgColor: this.hsbaToRGBA(global_setting.color),
-          onoff: global_setting.onoff
+          onoff: global_setting.onoff,
+          appOnOff: global_setting.appOnOff
         },
       })
       .then(res => {
