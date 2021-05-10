@@ -419,156 +419,173 @@ class Index extends React.Component {
     const { global_setting, temp_setting, update_flag } = this.state;
 
     return (
-      <Page>
+      <Page title="Settings" primaryAction={{content: 'Save Settings', disabled: update_flag, onAction: this.handleSubmit.bind(this), loading: this.state.updating_flag}}>
         <Layout>
           <Layout.Section>
-            <Card title="Settings" sectioned primaryFooterAction={{content: 'Save Settings', disabled: update_flag, onAction: this.handleSubmit.bind(this), loading: this.state.updating_flag}}>
+            <Card title="App Settings" sectioned>
               <Card.Section>
-                <p><b>Global Settings</b></p>
-                <div class="setting-line global-setting">
+                <div class="setting-line app-setting">
                   <div class="left-group">
                     <Switch onChange={this.handleGlobalOnOffAppChange.bind(this)} checked={global_setting.appOnOff} />
-                  </div>
-                </div>
-                <div class="setting-line global-setting">
-                  <div class="left-group">
-                    <Switch onChange={this.handleGlobalOnOffChange.bind(this)} checked={global_setting.onoff} />
-                    {
-                      global_setting.onoff ? (
-                        <Popover
-                        active={global_setting.popOverActive}
-                        activator={
-                          <Button onClick={this.handleGlobalPopOverOpen.bind(this)}>
-                            <Stack alignment="center" spacing="tight">
-                              <div
-                                style={{
-                                  height: "2rem",
-                                  width: "2rem",
-                                  borderRadius: "0.3rem",
-                                  background: rgbString(hsbToRgb(global_setting.color))
-                                }}
-                              />
-                              <span>Background color</span>
-                            </Stack>
-                          </Button>
-                        }
-                        onClose={this.handleGlobalPopOverClose.bind(this)}
-                      >
-                        <Popover.Section>
-                          <ColorPicker
-                            onChange={this.handleGlobalColorChange.bind(this)}
-                            color={global_setting.color}
-                            allowAlpha
-                          />
-                        </Popover.Section>
-                        <Popover.Section>
-                          <TextField value={rgbString(hsbToRgb(global_setting.color))} onChange={this.handleGlobalRgbChange.bind(this)} />
-                        </Popover.Section>
-                      </Popover>
-                    ) : (
-                      <></>
-                    )}
-                  </div>
-                </div>
-              </Card.Section>
-
-              <Card.Section>
-                <p><b>Detail Settings</b></p>
-                <div id="content" role="main">
-                  <div className="inner-block">
-                    <div class="setting-line">
-                      <div class="left-group">
-                        <TextField value={temp_setting.vendor} onChange={this.handleTempVendorChange.bind(this)} />
-                        <Switch onChange={this.handleTempOnOffChange.bind(this)} checked={temp_setting.onoff} />
-                        <Popover
-                          active={temp_setting.popOverActive}
-                          activator={
-                            <Button onClick={this.handleTempPopOverOpen.bind(this)}>
-                              <Stack alignment="center" spacing="tight">
-                                <div
-                                  style={{
-                                    height: "2rem",
-                                    width: "2rem",
-                                    borderRadius: "0.3rem",
-                                    background: rgbString(hsbToRgb(temp_setting.color))
-                                  }}
-                                />
-                                <span>Background color</span>
-                              </Stack>
-                            </Button>
-                          }
-                          onClose={this.handleTempPopOverClose.bind(this)}
-                        >
-                          <Popover.Section>
-                            <ColorPicker
-                              onChange={this.handleTempColorChange.bind(this)}
-                              color={temp_setting.color}
-                              allowAlpha
-                            />
-                          </Popover.Section>
-                          <Popover.Section>
-                            <TextField value={rgbString(hsbToRgb(temp_setting.color))} onChange={this.handleTempRgbChange.bind(this)} />
-                          </Popover.Section>
-                        </Popover>
-                      </div>
-                      <div class="right-group">
-                        <Button id="add-block" onClick={this.handleAddBlock.bind(this)} loading={this.state.loading_flag}>Add a Condition</Button>
-                      </div>
-                    </div>
-                    {
-                      this.state.additional_list.map((block, key) => (
-                        <div class="setting-line">
-                          <div class="left-group">
-                          <TextField value={block.vendor} onChange={this.handleVendorChange.bind(this, key)} disabled />
-                            <Switch onChange={this.handleChange.bind(this, key)} checked={block.onoff} />
-                            {
-                              block.onoff ? (
-                                <Popover
-                                  active={block.popOverActive}
-                                  activator={
-                                    <Button onClick={this.handlePopoverOpen.bind(this, key)}>
-                                      <Stack alignment="center" spacing="tight">
-                                        <div
-                                          style={{
-                                            height: "2rem",
-                                            width: "2rem",
-                                            borderRadius: "0.3rem",
-                                            background: rgbString(hsbToRgb(block.color))
-                                          }}
-                                        />
-                                        <span>Background color</span>
-                                      </Stack>
-                                    </Button>
-                                  }
-                                  onClose={this.handlePopoverClose.bind(this, key)}
-                                >
-                                  <Popover.Section>
-                                    <ColorPicker
-                                      onChange={this.handleColorChange.bind(this, key)}
-                                      color={block.color}
-                                      allowAlpha
-                                    />
-                                  </Popover.Section>
-                                  <Popover.Section>
-                                    <TextField value={rgbString(hsbToRgb(block.color))} onChange={this.handleRgbChange.bind(this, key)} />
-                                  </Popover.Section>
-                                </Popover>
-                              ) : (
-                                <></>
-                              )
-                            }
-                          </div>
-                          <div class="right-group">
-                            <Button destructive onClick={this.handleRemoveBlock.bind(this, key)} loading={this.state.remove_flag}>Remove</Button>
-                          </div>
-                        </div>
-                      ))
-                    }
                   </div>
                 </div>
               </Card.Section>
             </Card>
           </Layout.Section>
+          {
+            global_setting.appOnOff ? (
+              <Layout.Section>
+                <Card title="Global Background" sectioned>
+                  <Card.Section>
+                    <div class="setting-line global-setting">
+                      <div class="left-group">
+                        <Switch onChange={this.handleGlobalOnOffAppChange.bind(this)} checked={global_setting.appOnOff} />
+                      </div>
+                    </div>
+                    <div class="setting-line global-setting">
+                      <div class="left-group">
+                        <Switch onChange={this.handleGlobalOnOffChange.bind(this)} checked={global_setting.onoff} />
+                        {
+                          global_setting.onoff ? (
+                            <Popover
+                            active={global_setting.popOverActive}
+                            activator={
+                              <Button onClick={this.handleGlobalPopOverOpen.bind(this)}>
+                                <Stack alignment="center" spacing="tight">
+                                  <div
+                                    style={{
+                                      height: "2rem",
+                                      width: "2rem",
+                                      borderRadius: "0.3rem",
+                                      background: rgbString(hsbToRgb(global_setting.color))
+                                    }}
+                                  />
+                                  <span>Background color</span>
+                                </Stack>
+                              </Button>
+                            }
+                            onClose={this.handleGlobalPopOverClose.bind(this)}
+                          >
+                            <Popover.Section>
+                              <ColorPicker
+                                onChange={this.handleGlobalColorChange.bind(this)}
+                                color={global_setting.color}
+                                allowAlpha
+                              />
+                            </Popover.Section>
+                            <Popover.Section>
+                              <TextField value={rgbString(hsbToRgb(global_setting.color))} onChange={this.handleGlobalRgbChange.bind(this)} />
+                            </Popover.Section>
+                          </Popover>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </div>
+                  </Card.Section>
+                </Card>
+                <Card title="Detail Backgrounds" sectioned>
+                  <Card.Section>
+                    <p><b>Detail Settings</b></p>
+                    <div id="content" role="main">
+                      <div className="inner-block">
+                        <div class="setting-line">
+                          <div class="left-group">
+                            <TextField value={temp_setting.vendor} onChange={this.handleTempVendorChange.bind(this)} />
+                            <Switch onChange={this.handleTempOnOffChange.bind(this)} checked={temp_setting.onoff} />
+                            <Popover
+                              active={temp_setting.popOverActive}
+                              activator={
+                                <Button onClick={this.handleTempPopOverOpen.bind(this)}>
+                                  <Stack alignment="center" spacing="tight">
+                                    <div
+                                      style={{
+                                        height: "2rem",
+                                        width: "2rem",
+                                        borderRadius: "0.3rem",
+                                        background: rgbString(hsbToRgb(temp_setting.color))
+                                      }}
+                                    />
+                                    <span>Background color</span>
+                                  </Stack>
+                                </Button>
+                              }
+                              onClose={this.handleTempPopOverClose.bind(this)}
+                            >
+                              <Popover.Section>
+                                <ColorPicker
+                                  onChange={this.handleTempColorChange.bind(this)}
+                                  color={temp_setting.color}
+                                  allowAlpha
+                                />
+                              </Popover.Section>
+                              <Popover.Section>
+                                <TextField value={rgbString(hsbToRgb(temp_setting.color))} onChange={this.handleTempRgbChange.bind(this)} />
+                              </Popover.Section>
+                            </Popover>
+                          </div>
+                          <div class="right-group">
+                            <Button id="add-block" onClick={this.handleAddBlock.bind(this)} loading={this.state.loading_flag}>Add a Condition</Button>
+                          </div>
+                        </div>
+                        {
+                          this.state.additional_list.map((block, key) => (
+                            <div class="setting-line">
+                              <div class="left-group">
+                              <TextField value={block.vendor} onChange={this.handleVendorChange.bind(this, key)} disabled />
+                                <Switch onChange={this.handleChange.bind(this, key)} checked={block.onoff} />
+                                {
+                                  block.onoff ? (
+                                    <Popover
+                                      active={block.popOverActive}
+                                      activator={
+                                        <Button onClick={this.handlePopoverOpen.bind(this, key)}>
+                                          <Stack alignment="center" spacing="tight">
+                                            <div
+                                              style={{
+                                                height: "2rem",
+                                                width: "2rem",
+                                                borderRadius: "0.3rem",
+                                                background: rgbString(hsbToRgb(block.color))
+                                              }}
+                                            />
+                                            <span>Background color</span>
+                                          </Stack>
+                                        </Button>
+                                      }
+                                      onClose={this.handlePopoverClose.bind(this, key)}
+                                    >
+                                      <Popover.Section>
+                                        <ColorPicker
+                                          onChange={this.handleColorChange.bind(this, key)}
+                                          color={block.color}
+                                          allowAlpha
+                                        />
+                                      </Popover.Section>
+                                      <Popover.Section>
+                                        <TextField value={rgbString(hsbToRgb(block.color))} onChange={this.handleRgbChange.bind(this, key)} />
+                                      </Popover.Section>
+                                    </Popover>
+                                  ) : (
+                                    <></>
+                                  )
+                                }
+                              </div>
+                              <div class="right-group">
+                                <Button destructive onClick={this.handleRemoveBlock.bind(this, key)} loading={this.state.remove_flag}>Remove</Button>
+                              </div>
+                            </div>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  </Card.Section>
+                </Card>
+              </Layout.Section>
+            ) : (
+              <></>
+            )
+          }
         </Layout>
       </Page>
     );
