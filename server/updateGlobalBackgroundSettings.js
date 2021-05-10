@@ -5,12 +5,14 @@ const updateGlobalBackgroundSettings = async (setting) => {
     updateGlobalBackgroundSetting(setting.id, {
       bgColor: setting.bgColor,
       onoff: setting.onoff,
+      appOnOff: setting.appOnOff,
       accessToken: setting.accessToken
     });
   } else {
     updateGlobalBackgroundSetting(setting.id, {
       bgColor: setting.bgColor,
-      onoff: setting.onoff
+      onoff: setting.onoff,
+      appOnOff: setting.appOnOff,
     });
   }
   return;

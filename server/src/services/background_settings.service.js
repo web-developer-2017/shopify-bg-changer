@@ -18,6 +18,7 @@ const addGlobalBackgroundSetting = async (shop, setting) => {
       shop: shop,
       onoff: setting.onoff,
       bgColor: setting.bgColor,
+      appOnOff: setting.appOnOff,
       accessToken: setting.accessToken
     });
     new_setting.save();
@@ -25,6 +26,7 @@ const addGlobalBackgroundSetting = async (shop, setting) => {
     let new_setting = new BackgroundGlobalSettings({ 
       shop: shop,
       onoff: setting.onoff,
+      appOnOff: setting.appOnOff,
       bgColor: setting.bgColor
     });
     new_setting.save();
