@@ -3,6 +3,8 @@ const url = require('url');
 const path = require('path');
 const axios = require('axios');
 const dotenv = require('dotenv');
+const uploadProductImage = require('./uploadProductImage');
+const { RemoveBgError, removeBackgroundFromImageUrl } = require('remove.bg');
 
 dotenv.config();
 const {
@@ -12,31 +14,34 @@ const {
 } = process.env;
 
 const removeImageBackground = async ( imgUrl, bgColor ) => {
-  const parsed = url.parse(imgUrl);
-  const imgFileName = path.basename(parsed.pathname).split('.').slice(0, -1).join('.') + '.png';
-  const outputFile = IMAGE_DIR_PATH + '/' + imgFileName;
-  console.log('output: ', outputFile);
-  await axios({
-    url: REMOVE_BG_API_URL,
-    method: 'post',
-    data: {
-      image_url: imgUrl,
-      size: 'preview',
-      bg_color: bgColor
-    },
-    headers: {
-      'X-Api-Key': REMOVE_BG_API_KEY
-    },
-    responseType: 'stream'
-  })
-  .then(response => {
-    response.data.pipe(fs.createWriteStream(outputFile));
-  })
-  .catch(err => {
-    new Error(err);
-  });
+  try {
+    const parsed = url.parse(imgUrl);
+    const imgFileName = path.basename(parsed.pathname).split('.').slice(0, -1).join('.') + '.png';
+    const outputFile = IMAGE_DIR_PATH + '/' + imgFileName;
+    const imageUrl = imgUrl.split("?v=")[0];
+    console.log('image url: ', imageUrl);
+    console.log('output: ', outputFile);
 
-  return imgFileName;
+    const result = await removeBackgroundFromImageUrl({
+      url: imageUrl,
+      apiKey: REMOVE_BG_API_KEY,
+      size: "full",
+      type: "product",
+      bg_color: bgColor,
+      outputFile
+    });
+
+    console.log(`File saved to ${outputFile}`);
+    console.log(`${result.creditsCharged} credit(s) charged for this image`);
+    console.log(`Result width x height: ${result.resultWidth} x ${result.resultHeight}, type: ${result.detectedType}`);
+    console.log(result.base64img.substring(0, 40) + "..");
+    console.log(`Rate limit: ${result.rateLimit}, remaining: ${result.rateLimitRemaining}, reset: ${result.rateLimitReset}, retryAfter: ${result.retryAfter}`);
+    return imgFileName;
+  } catch (err) {
+    const errors = err;
+    console.log(JSON.stringify(errors));
+    return null;
+  }
 };
 
 module.exports = removeImageBackground;

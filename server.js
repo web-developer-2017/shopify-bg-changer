@@ -97,14 +97,14 @@ app.prepare().then(() => {
           });
         }
 
-        const additional_settings = await getBackgroundSettings(shop);
-        if(additional_settings.length) {
-          for(var i = 0; i < additional_settings.length; i++) {
-            await removeBackgroundSettings({
-              setting_id: additional_settings[i]._id
-            });
-          }
-        }
+        // const additional_settings = await getBackgroundSettings(shop);
+        // if(additional_settings.length) {
+        //   for(var i = 0; i < additional_settings.length; i++) {
+        //     await removeBackgroundSettings({
+        //       setting_id: additional_settings[i]._id
+        //     });
+        //   }
+        // }
 
         const productUpdateHookRegistration = await registerWebhook({
           address: `${HOST}/webhooks/products/create-update`,
@@ -120,19 +120,19 @@ app.prepare().then(() => {
           console.log('Failed to register product update webhook', productUpdateHookRegistration.result);
         }
 
-				const productCreateHookRegistration = await registerWebhook({
-          address: `${HOST}/webhooks/products/create-update`,
-          topic: 'PRODUCTS_CREATE',
-          accessToken,
-          shop,
-          apiVersion: ApiVersion.July20
-        });
+				// const productCreateHookRegistration = await registerWebhook({
+        //   address: `${HOST}/webhooks/products/create-update`,
+        //   topic: 'PRODUCTS_CREATE',
+        //   accessToken,
+        //   shop,
+        //   apiVersion: ApiVersion.July20
+        // });
 
-        if (productCreateHookRegistration.success) {
-          console.log('Successfully registered product create webhook!');
-        } else {
-          console.log('Failed to register product create webhook', productCreateHookRegistration.result);
-        }
+        // if (productCreateHookRegistration.success) {
+        //   console.log('Successfully registered product create webhook!');
+        // } else {
+        //   console.log('Failed to register product create webhook', productCreateHookRegistration.result);
+        // }
         
         // ctx.redirect('/');
         ctx.redirect(`/?shop=${shop}`);
@@ -143,34 +143,68 @@ app.prepare().then(() => {
   const webhook = receiveWebhook({ secret: SHOPIFY_API_SECRET_KEY });
 
   router.post('/webhooks/products/create-update', webhook, async (ctx) => {
+
 		const productData = ctx.request.body;
 		const productId = productData.id;
     const global_setting = await getGlobalBackgroundSettings(ctx.state.webhook.domain);
     const accessToken = global_setting[0].accessToken;
     const bgColor = await getBackgroundColor(ctx.state.webhook.domain, productData.vendor);
-    console.log('bgColor', bgColor);
-		console.log('productId', productId);
 
-    if(bgColor) {
-      for ( let index = 0; index < productData.images.length; index++ ) {
+    if(bgColor && productData.images.length) {
+      let imagesStatus = [];
+      let proceedImages = [];
+      for(let index = 0; index < productData.images.length; index++) {
         let image = productData.images[index];
         let imageMetafields = await getImageMetafields(ctx, accessToken, image.id);
-        let backgroundRemoved = imageMetafields.some(metafield => {
-          return (metafield.key == 'removed_bg') && (metafield.value == 'yes');
-        });
-        console.log('backgroundRemoved', backgroundRemoved);
-  
-        if (!backgroundRemoved) {
-          let fileName = await removeImageBackground(image.src, bgColor);
-          uploadProductImage(ctx, accessToken, productId, image, fileName)
-            .then((uploadedProductImage) => {
-              removeProductImage(ctx, accessToken, productId, image.id);
-              console.log('uploadedProductImage', uploadedProductImage);
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+        let backgroundRemoved = false;
+        for(let metafieldIndex = 0; metafieldIndex < imageMetafields.length; metafieldIndex++) {
+          if(imageMetafields[metafieldIndex].key == 'removed_bg') {
+            backgroundRemoved = imageMetafields[metafieldIndex].value;
+            break;
+          }
         }
+        if(!backgroundRemoved) {
+          imagesStatus.push({
+            image_id: image.id,
+            image: image
+          });
+        } else {
+          proceedImages.push({
+            image_id: image.id,
+            origin_image: imageMetafields[0].value
+          });
+        }
+      }
+
+      console.log(imagesStatus);
+      console.log(proceedImages);
+
+      if(imagesStatus.length == 0) {
+        ctx.res.statusCode = 200;
+        return false;
+      }
+
+      let originImage = imagesStatus[0];
+      let createdFlag = false;
+      for(let colIndex = 0; colIndex < proceedImages.length; colIndex++) {
+        if(originImage.image_id == proceedImages[colIndex].origin_image) {
+          createdFlag = true;
+          break;
+        }
+      }
+      if(createdFlag) {
+        await removeProductImage(ctx, accessToken, productId, originImage.image_id);
+        ctx.res.statusCode = 200;
+        return true;
+      } else {
+        let fileName = await removeImageBackground(originImage.image.src, bgColor);
+        if(fileName) {
+          let uploadResult = await uploadProductImage(ctx, accessToken, productId, originImage.image, fileName);
+          // let uploadResult = await uploadProductImage(ctx, accessToken, productId, productImage.image);
+          console.log('uploadedProductImage', uploadResult);
+        }
+        ctx.res.statusCode = 200;
+        return true;
       }
     }
 

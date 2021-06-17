@@ -8,7 +8,7 @@ const removeProductImage = async (ctx, accessToken, productId, imgId) => {
 		accessToken : accessToken
 	});
 
-	shopify.productImage.delete(productId, imgId);
+	await shopify.productImage.delete(productId, imgId);
 	console.log(imgId + " Image deleted");
 };
 

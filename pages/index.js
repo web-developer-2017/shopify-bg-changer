@@ -16,8 +16,8 @@ class Index extends React.Component {
           saturation: 0.7,
           alpha: 0
         },
-        onoff: true,
-        appOnOff: true,
+        onoff: false,
+        appOnOff: false,
         popOverActive: false
       },
       temp_setting: {

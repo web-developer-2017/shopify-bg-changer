@@ -9,7 +9,7 @@ const getBackgroundColor = async (shop, productVendor) => {
   if(globalBackgroundSettings[0].appOnOff) {
     if(backgroundSettings.length > 0) {
       for(var i = 0; i < backgroundSettings.length; i++) {
-        if(backgroundSettings[i].vendor == productVendor && backgroundSettings[i].onoff) {
+        if(backgroundSettings[i].vendor.trim() == productVendor && backgroundSettings[i].onoff) {
           backgroundColor = backgroundSettings[i].bgColor;
           break;
         }

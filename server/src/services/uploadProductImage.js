@@ -14,7 +14,7 @@ const uploadProductImage = async (ctx, accessToken, productId, originalImage, fi
 		accessToken : accessToken
 	});
 
-	var uploadImage = {};
+	let uploadImage = {};
 	if ( originalImage.position != null ) {
 		uploadImage.position = originalImage.position;
 	}
@@ -27,15 +27,17 @@ const uploadProductImage = async (ctx, accessToken, productId, originalImage, fi
 	uploadImage.metafields = [
 		{
 			"key": "removed_bg",
-			"value": "yes",
+			"value": originalImage.id.toString(),
 			"value_type": "string",
 			"namespace": "global"
 		}
 	];
 
 	uploadImage.src = HOST + '/' + IMAGE_DIR_PATH + '/' + fileName;
+	// uploadImage.src = originalImage.src;
 
 	return uploadResult = await shopify.productImage.create(productId, uploadImage);
+	// return uploadResult = await shopify.product.update(productData.id, uploadImage);
 };
 
 module.exports = uploadProductImage;
