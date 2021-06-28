@@ -1,5 +1,6 @@
 //require('isomorphic-fetch');
 const Shopify = require('shopify-api-node');
+const { removeImageProcess } = require('./imageProcess.service');
 
 const removeProductImage = async (ctx, accessToken, productId, imgId) => {
 	
@@ -9,6 +10,7 @@ const removeProductImage = async (ctx, accessToken, productId, imgId) => {
 	});
 
 	await shopify.productImage.delete(productId, imgId);
+	await removeImageProcess(imgId);
 	console.log(imgId + " Image deleted");
 };
 

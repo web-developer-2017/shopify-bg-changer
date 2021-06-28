@@ -30,6 +30,8 @@ const uploadProductImage = require('./server/src/services/uploadProductImage');
 const getImageMetafields = require('./server/src/services/getImageMetafields');
 const getBackgroundColor = require('./server/src/services/getBackgroundColor');
 
+const { getImageProcess, addImageProcess } = require('./server/src/services/imageProcess.service');
+
 const fs = require("fs");
 const path = require("path");
 
@@ -171,20 +173,20 @@ app.prepare().then(() => {
         } else {
           proceedImages.push({
             image_id: image.id,
-            origin_image: imageMetafields[0].value
+            origin_image: backgroundRemoved
           });
         }
       }
-
-      console.log(imagesStatus);
-      console.log(proceedImages);
+      console.log(productData.images.length, ' = ', imagesStatus.length, ' + ', proceedImages.length, '\n');
 
       if(imagesStatus.length == 0) {
         ctx.res.statusCode = 200;
+        console.log('==================================END==================================\n');
         return false;
       }
 
       let originImage = imagesStatus[0];
+
       let createdFlag = false;
       for(let colIndex = 0; colIndex < proceedImages.length; colIndex++) {
         if(originImage.image_id == proceedImages[colIndex].origin_image) {
@@ -195,14 +197,23 @@ app.prepare().then(() => {
       if(createdFlag) {
         await removeProductImage(ctx, accessToken, productId, originImage.image_id);
         ctx.res.statusCode = 200;
+        console.log('=================================Removed Image===================================\n');
         return true;
       } else {
+        let imageProcess = await getImageProcess(ctx.state.webhook.domain, originImage.image_id);
+        console.log('imageProcess: ', imageProcess);
+        if(imageProcess.length) {
+          console.log('==================================Processing Now==================================\n');
+          ctx.res.statusCode = 200;
+          return true;  
+        }
+        await addImageProcess(ctx.state.webhook.domain, originImage.image_id);
         let fileName = await removeImageBackground(originImage.image.src, bgColor);
         if(fileName) {
           let uploadResult = await uploadProductImage(ctx, accessToken, productId, originImage.image, fileName);
-          // let uploadResult = await uploadProductImage(ctx, accessToken, productId, productImage.image);
-          console.log('uploadedProductImage', uploadResult);
+          console.log(uploadResult.id + " Image uploaded");
         }
+        console.log('==================================Created Image==================================\n');
         ctx.res.statusCode = 200;
         return true;
       }

@@ -19,8 +19,6 @@ const removeImageBackground = async ( imgUrl, bgColor ) => {
     const imgFileName = path.basename(parsed.pathname).split('.').slice(0, -1).join('.') + '.png';
     const outputFile = IMAGE_DIR_PATH + '/' + imgFileName;
     const imageUrl = imgUrl.split("?v=")[0];
-    console.log('image url: ', imageUrl);
-    console.log('output: ', outputFile);
 
     const result = await removeBackgroundFromImageUrl({
       url: imageUrl,
@@ -30,12 +28,6 @@ const removeImageBackground = async ( imgUrl, bgColor ) => {
       bg_color: bgColor,
       outputFile
     });
-
-    console.log(`File saved to ${outputFile}`);
-    console.log(`${result.creditsCharged} credit(s) charged for this image`);
-    console.log(`Result width x height: ${result.resultWidth} x ${result.resultHeight}, type: ${result.detectedType}`);
-    console.log(result.base64img.substring(0, 40) + "..");
-    console.log(`Rate limit: ${result.rateLimit}, remaining: ${result.rateLimitRemaining}, reset: ${result.rateLimitReset}, retryAfter: ${result.retryAfter}`);
     return imgFileName;
   } catch (err) {
     const errors = err;
